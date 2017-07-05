@@ -1,0 +1,249 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Login</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link href="../demo.css" rel="stylesheet" type="text/css"/>
+
+    <style type="text/css">
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .errorText {
+            color: red;
+        }
+    </style>
+    <script src="../scripts/swfupload/swfupload.js" type="text/javascript"></script>
+    <script src="../scripts/boot.js" type="text/javascript"></script>
+
+</head>
+<body>
+<div id="loginWindow" class="mini-window" title="用户登录" style="width:350px;height:190px;"
+     showModal="true" showCloseButton="false">
+    <div id="loginForm" style="padding:15px;padding-top:10px;">
+        <table>
+            <tr>
+                <td style="width:60px;text-align: right;"><label for="username$text">帐号：</label></td>
+                <td>
+                    <input id="username" name="username" class="mini-textbox" errorMode="none"
+                           requiredErrorText="帐号不能为空" required="true"
+                           style="width:150px;" onvalidation="onUsernameValidation"/>
+                </td>
+                <td id="usernameError" class="errorText"></td>
+            </tr>
+            <tr>
+                <td style="width:60px;text-align: right;"><label for="password$text">密码：</label></td>
+                <td>
+                    <input id="password" name="password" class="mini-password" errorMode="none"
+                           requiredErrorText="密码不能为空" required="true" style="width:150px;" onenter="onLoginClick"
+                           onvalidation="onPasswordValidation"/>
+                    <!--&nbsp;&nbsp;<a href="#">忘记密码?</a>-->
+                </td>
+                <td id="passwordError" class="errorText"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="padding-top:5px;">
+                    <a onclick="onLoginClick" class="mini-button" style="width:70px;">登录</a>
+                    <a onclick="onGotoRegisterClick" class="mini-button" style="width:70px;">去注册</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<div id="registerWindow" class="mini-window" title="用户注册" style="width:410px;height:190px;"
+     showModal="true" showCloseButton="false">
+
+    <div id="registerForm" style="padding:15px;padding-top:10px;">
+        <table>
+            <tr>
+                <td style="width:80px;text-align: right;"><label for="registerUsername$text"><a
+                        style="color:red">*</a>帐号：</label></td>
+                <td>
+                    <input id="registerUsername" name="username" class="mini-textbox" errorMode="none"
+                           requiredErrorText="帐号不能为空"
+                           required="true" style="width:150px;" onvalidation="onRegisterUsernameValidation"/>
+                </td>
+                <td id="registerUsernameError" class="errorText"></td>
+            </tr>
+            <tr>
+                <td style="width:80px;text-align: right;"><label for="registerPassword$text"><a
+                        style="color:red">*</a>密码：</label></td>
+                <td>
+                    <input id="registerPassword" name="password" class="mini-password" errorMode="none"
+                           vtype="minLength:6" minLengthErrorText="密码不能少于6个字符"
+                           requiredErrorText="密码不能为空" required="true" style="width:150px;" onenter="onLoginClick"
+                           onvalidation="onRegisterPasswordValidation"/>
+                </td>
+                <td id="registerPasswordError" class="errorText"></td>
+            </tr>
+            <tr>
+                <td style="width:80px;text-align: right;"><label for="confirmPassword$text"><a
+                        style="color:red">*</a>确认密码：</label></td>
+                <td>
+                    <input id="confirmPassword" name="confirmPassword" class="mini-password" errorMode="none"
+                           vtype="minLength:6" minLengthErrorText="密码不能少于6个字符"
+                           requiredErrorText="密码不能为空" required="true" style="width:150px;" onenter="onLoginClick"
+                           onvalidation="onConfirmPasswordValidation"/>
+                </td>
+                <td id="confirmPasswordError" class="errorText"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="padding-top:5px;">
+                    <a onclick="onRegisterClick" class="mini-button" style="width:70px;">立即注册</a>
+                    <a onclick="onBacktoLoginClick" class="mini-button" style="width:70px;">返回登录</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    mini.parse();
+
+    var loginWindow = mini.get("loginWindow");
+    var registerWindow = mini.get("registerWindow");
+    loginWindow.show();
+    registerWindow.hide();
+
+    function onLoginClick(e) {
+
+        var form = new mini.Form("#loginWindow");
+        form.validate();
+        if (form.isValid() == false) {
+            return;
+        }
+
+        var data = form.getData();
+        var json = mini.encode(data);
+        $.ajax({
+            url: "../ws/user/v1/login",
+            data: json,
+            type: 'post',
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            success: function (text) {
+                if (text.code == 1000) {
+                    mini.Cookie.set('Token', text.data);
+                    loginWindow.hide();
+                    mini.loading("登录成功，马上转到系统...", "登录成功");
+                    setTimeout(function () {
+                        window.location = "../dms/index.html";
+                    }, 1500);
+                } else {
+                    document.getElementById("passwordError").innerHTML = "密码错误";
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+            }
+        });
+    }
+
+    function onRegisterClick(e) {
+
+        var form = new mini.Form("#registerWindow");
+        form.validate();
+        if (form.isValid() == false) {
+            return;
+        }
+
+        var data = form.getData();
+        var json = mini.encode(data);
+        $.ajax({
+            url: "../ws/user/v1/register",
+            data: json,
+            type: 'post',
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            success: function (text) {
+                if (text) {
+                    loginWindow.hide();
+                    mini.loading("注册成功，马上转到系统...", "注册成功");
+                    setTimeout(function () {
+                        window.location = "../dms/index.html";
+                    }, 1500);
+                } else {
+                    // server error
+                    document.getElementById("registerUsernameError").innerHTML = "注册失败";
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+            }
+        });
+    }
+
+    function onGotoRegisterClick(e) {
+        registerWindow.show();
+        loginWindow.hide();
+    }
+
+    function onBacktoLoginClick(e) {
+        loginWindow.show();
+        registerWindow.hide();
+    }
+
+    function onUsernameValidation(e) {
+        document.getElementById("usernameError").innerHTML = e.errorText;
+    }
+
+    function onPasswordValidation(e) {
+        document.getElementById("passwordError").innerHTML = e.errorText;
+    }
+    function onRegisterUsernameValidation(e) {
+        var username = mini.get("registerUsername").getValue();
+        if (username == "") {
+            document.getElementById("registerUsernameError").innerHTML = e.errorText;
+            return;
+        }
+        $.ajax({
+            url: "../ws/user/v1/check?username=" + username,
+            type: 'get',
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            success: function (text) {
+                if (text) {
+                    document.getElementById("registerUsernameError").innerHTML = "";
+                } else {
+                    document.getElementById("registerUsernameError").innerHTML = "该帐户已被注册";
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+            }
+        });
+    }
+
+    function onRegisterPasswordValidation(e) {
+        document.getElementById("registerPasswordError").innerHTML = e.errorText;
+    }
+
+    function onConfirmPasswordValidation(e) {
+        var error = document.getElementById("confirmPasswordError");
+        error.innerHTML = e.errorText;
+        if (error.innerHTML == "") {
+            var password = mini.get("registerPassword").getValue();
+            var confirmPassword = mini.get("confirmPassword").getValue();
+            if (password != confirmPassword) {
+                error.innerHTML = "两次填写的密码不一致";
+            }
+        }
+    }
+
+
+</script>
+
+
+</body>
+</html>

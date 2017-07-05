@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Employee</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link href="../css/demo.css" rel="stylesheet" type="text/css"/>
+    <script src="../scripts/boot.js" type="text/javascript"></script>
+</head>
+<body>
+<style type="text/css">
+    html, body {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .myrow {
+        background: #fceee2;
+    }
+</style>
+<div class="mini-toolbar" style="padding:2px;border-bottom:0;">
+    <table style="width:100%;">
+        <tr>
+            <td style="width:100%;">
+                <!--<a class="mini-button" iconCls="icon-add" plain="true" onclick="addRow()">增加</a>-->
+                <!--<span class="separator"></span>-->
+                <a class="mini-button" iconCls="icon-save" plain="true" onclick="saveData()">保存</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="mini-fit">
+
+    <div id="datagrid1" class="mini-datagrid" style="width:100%;height:100%;"
+         url="../ws/bill/"
+         ajaxOptions="{type: 'get', contentType: 'application/json;charset=utf-8'}"
+         idField="id" sizeList="[5,10,20,50]" pageSize="10" allowCellEdit="true" allowCellSelect="true"
+         showFilterRow="false" multiSelect="true" showSummaryRow="true" ondrawsummarycell="onDrawSummaryCell">
+        <div property="columns">
+            <div type="indexcolumn"></div>
+            <div type="checkcolumn"></div>
+            <div field="pickupDate" width="100" headerAlign="center" dateFormat="yyyy-MM-dd" allowSort="false">领票日期
+            </div>
+            <div field="provideTicketCompanyName" width="100" headerAlign="center" allowSort="false">供票单位
+            </div>
+            <div field="quantity" width="100" headerAlign="center" allowSort="false">煤票支数
+            </div>
+            <div field="numberInterval" width="100" headerAlign="center" allowSort="false">煤票号段
+            </div>
+            <div field="deliveryDate" width="100" headerAlign="center" dateFormat="yyyy-MM-dd" allowSort="false">交票日期
+                <input property="editor" class="mini-datepicker" style="width:100%;" minWidth="100"/>
+            </div>
+            <div field="useTicketCompanyId" width="100" type="comboboxcolumn" headerAlign="center" allowSort="false">
+                用票单位
+                <input property="editor" class="mini-combobox" style="width:100%;" textField="name" valueField="id"
+                       url="../ws/masterdata/companies?type=2"
+                       ajaxOptions="{type: 'get', contentType: 'application/json;charset=utf-8'}"
+                       required="true" allowInput="true" showNullItem="false"/>
+            </div>
+            <div field="books" width="100" headerAlign="center" allowSort="false">本数
+                <input property="editor" class="mini-textbox" style="width:100%;" minWidth="100"/>
+            </div>
+            <div field="usedQuantity" width="100" headerAlign="center" allowSort="false">使用支数
+                <input property="editor" class="mini-textbox" style="width:100%;" minWidth="100"/>
+            </div>
+            <div field="ton" width="100" headerAlign="center" allowSort="false">吨位
+                <input property="editor" class="mini-textbox" style="width:100%;" minWidth="100"/>
+            </div>
+            <div field="unitPrice" width="100" headerAlign="center" allowSort="false">单价
+                <input property="editor" class="mini-textbox" style="width:100%;" minWidth="100"/>
+            </div>
+            <div field="totalPrice" width="100" headerAlign="center" allowSort="false">金额
+            </div>
+            <div field="state" width="100" headerAlign="center" allowSort="false">状态
+                <input property="editor" class="mini-textbox" style="width:100%;" minWidth="100"/>
+            </div>
+            <div field="paymentDate" width="100" headerAlign="center" dateFormat="yyyy-MM-dd" allowSort="false">付款日期
+                <input property="editor" class="mini-datepicker" style="width:100%;" minWidth="100"/>
+            </div>
+            <div field="paymentAmount" width="100" headerAlign="center" allowSort="false">付款金额
+                <input property="editor" class="mini-textbox" style="width:100%;" minWidth="100"/>
+            </div>
+            <div field="paymentMethod" width="100" headerAlign="center" allowSort="false">付款方式
+                <input property="editor" class="mini-textbox" style="width:100%;" minWidth="100"/>
+            </div>
+            <div field="balance" width="100" headerAlign="center" allowSort="false">余额
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    mini.parse();
+    var grid = mini.get("datagrid1");
+    grid.load();
+
+    grid.on("drawcell", function (e) {
+        var record = e.record;
+        if (record.state == "外卖") {
+            e.rowCls = "myrow";
+        }
+    })
+
+    function addRow() {
+        var newRow = {};
+        grid.addRow(newRow, 0);
+        grid.beginEditCell(newRow, "name");
+    }
+
+    function saveData() {
+
+        grid.validate();
+        if (grid.isValid() == false) {
+            alert("请校验输入单元格内容");
+            var error = grid.getCellErrors()[0];
+            grid.beginEditCell(error.record, error.column);
+            return;
+        }
+
+        var data = grid.getChanges();
+        var json = mini.encode(data);
+        alert(json);
+        grid.loading("保存中，请稍后......");
+        $.ajax({
+            url: "../ws/bill/",
+            data: json,
+            type: 'post',
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            success: function (text) {
+                grid.reload();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+            }
+        });
+    }
+
+    function onDrawSummaryCell(e) {
+        var rows = e.data;
+
+        if (e.field == "quantity") {
+            var total = 0;
+            for (var i = 0, l = rows.length; i < l; i++) {
+                var row = rows[i];
+                var t = row.quantity;
+                if (isNaN(t)) continue;
+                total += t;
+            }
+            e.cellHtml = "煤票支数: " + total;
+        }
+
+        if (e.field == "usedQuantity") {
+            var total = 0;
+            for (var i = 0, l = rows.length; i < l; i++) {
+                var row = rows[i];
+                var t = row.usedQuantity;
+                if (isNaN(t)) continue;
+                total += t;
+            }
+            e.cellHtml = "使用支数: " + total;
+        }
+
+        if (e.field == "ton") {
+            var total = 0;
+            for (var i = 0, l = rows.length; i < l; i++) {
+                var row = rows[i];
+                var t = row.ton;
+                if (isNaN(t)) continue;
+                total += t;
+            }
+            e.cellHtml = "吨位: " + total;
+        }
+
+        if (e.field == "totalPrice") {
+            var total = 0;
+            for (var i = 0, l = rows.length; i < l; i++) {
+                var row = rows[i];
+                var t = row.totalPrice;
+                if (isNaN(t)) continue;
+                total += t;
+            }
+            e.cellHtml = "金额: " + total;
+        }
+
+        if (e.field == "paymentAmount") {
+            var total = 0;
+            for (var i = 0, l = rows.length; i < l; i++) {
+                var row = rows[i];
+                var t = row.paymentAmount;
+                if (isNaN(t)) continue;
+                total += t;
+            }
+            e.cellHtml = "付款金额: " + total;
+        }
+
+        if (e.field == "balance") {
+            var total = 0;
+            for (var i = 0, l = rows.length; i < l; i++) {
+                var row = rows[i];
+                var t = row.balance;
+                if (isNaN(t)) continue;
+                total += t;
+            }
+            e.cellHtml = "余额: " + total;
+        }
+    }
+
+    $(document).ajaxComplete(function (event, jqXHR, options) {
+        var str = jqXHR.responseText;
+        var json = JSON.parse(str);
+        var code = json.code;
+        if (code != 1000) {
+            setTimeout(function () {
+                top.location.href = "../dms/login.html";
+            }, 1000);
+        }
+    })
+
+</script>
+
+</body>
+</html>                   

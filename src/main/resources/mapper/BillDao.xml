@@ -1,0 +1,71 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cts.dao.BillDao">
+
+    <resultMap id="BillDtoMap" type="BillDto">
+        <id property="ticketId" column="ticket_id"/>
+        <result property="billId" column="bill_id"/>
+        <result property="pickupDate" column="pickup_date" typeHandler="com.cts.handler.LocalDateTimeHandler"/>
+        <result property="provideTicketCompanyName" column="provide_ticket_company_name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="startNumber" column="start_number"/>
+        <result property="endNumber" column="end_number"/>
+        <result property="deliveryDate" column="delivery_date" typeHandler="com.cts.handler.LocalDateTimeHandler"/>
+        <result property="useTicketCompanyId" column="use_ticket_company_id"/>
+        <result property="useTicketCompanyName" column="use_ticket_company_name"/>
+        <result property="books" column="books"/>
+        <result property="usedQuantity" column="used_quantity"/>
+        <result property="ton" column="ton"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="totalPrice" column="total_price"/>
+        <result property="state" column="state"/>
+        <result property="paymentAmount" column="payment_amount"/>
+        <result property="paymentDate" column="payment_date"/>
+        <result property="paymentMethod" column="payment_method"/>
+        <result property="balance" column="balance"/>
+    </resultMap>
+
+    <select id="getBills" resultMap="BillDtoMap">
+        select t.id as ticket_id, t.pickup_date, c.name as provide_ticket_company_name,
+        t.quantity, t.start_number, t.end_number, t.delivery_date,
+        b.id as bill_id, b.company_id as use_ticket_company_id, bc.name as use_ticket_company_name,
+        b.books, b.used_quantity, b.ton, b.unit_price, b.total_price,
+        b.state, b.payment_amount, b.payment_date, b.payment_method, b.balance
+        from ticket t left join company c on t.company_id = c.id
+        left join bill b on t.id = b.ticket_id
+        left join company bc on b.company_id = bc.id
+    </select>
+
+    <insert id="saveBills" parameterType="list">
+        <foreach collection="list" item="item" index="index" separator=";">
+            update ticket set delivery_date = #{item.deliveryDate} where id = #{item.ticketId};
+            <choose>
+                <when test="item.billId == 0">
+                    insert into bill (ticket_id, company_id, books, used_quantity, ton, unit_price, total_price,
+                    state, payment_date, payment_amount, payment_method, balance)
+                    values (#{item.ticketId}, #{item.useTicketCompanyId}, #{item.books}, #{item.usedQuantity},
+                    #{item.ton}, #{item.unitPrice},
+                    #{item.totalPrice}, #{item.state}, #{item.paymentDate}, #{item.paymentAmount},
+                    #{item.paymentMethod}, #{item.balance})
+                </when>
+                <otherwise>
+                    update bill set
+                    company_id = #{item.useTicketCompanyId},
+                    books = #{item.books},
+                    used_quantity = #{item.usedQuantity},
+                    ton = #{item.ton},
+                    unit_price = #{item.unitPrice},
+                    total_price = #{item.totalPrice},
+                    state = #{item.state},
+                    payment_date = #{item.paymentDate},
+                    payment_amount = #{item.paymentAmount},
+                    payment_method = #{item.paymentMethod},
+                    balance = #{item.balance}
+                    where id = #{item.billId}
+                </otherwise>
+            </choose>
+        </foreach>
+    </insert>
+
+</mapper>

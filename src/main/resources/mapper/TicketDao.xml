@@ -1,0 +1,70 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cts.dao.TicketDao">
+
+    <resultMap id="TicketDtoMap" type="TicketDto">
+        <id property="id" column="id"/>
+        <result property="pickupDate" column="pickup_date" typeHandler="com.cts.handler.LocalDateTimeHandler"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="startNumber" column="start_number"/>
+        <result property="endNumber" column="end_number"/>
+        <result property="deliveryDate" column="delivery_date" typeHandler="com.cts.handler.LocalDateTimeHandler"/>
+    </resultMap>
+
+    <resultMap id="TicketNumberDtoMap" type="TicketNumberDto">
+        <id property="id" column="id"/>
+        <result property="groups" column="groups"/>
+        <result property="number" column="number"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+    <select id="getCurrentTicketNumber" parameterType="string" resultMap="TicketNumberDtoMap">
+        select * from ticket_number where groups = #{groups}
+    </select>
+
+    <select id="addTicketNumber" parameterType="TicketNumberDto" resultType="int">
+        if exists (select 1 from ticket_number where groups = #{groups})
+            begin
+                <![CDATA[
+                    update ticket_number set number = #{number}, version = #{version}
+                    where groups = #{groups} and version < #{version}
+                    select @@rowcount
+                ]]>
+            end
+        else
+            begin
+              insert into ticket_number (groups, number) values (#{groups}, #{number})
+              select @@rowcount
+            end
+    </select>
+
+    <select id="getTickets" resultMap="TicketDtoMap">
+        select t.id, t.pickup_date, c.id as company_id, c.name as company_name,
+        t.quantity, t.start_number, t.end_number, t.delivery_date
+        from ticket t left join company c on t.company_id = c.id
+    </select>
+
+    <insert id="saveTickets" parameterType="list">
+        <foreach collection="list" item="item" index="index" separator=";">
+            <choose>
+                <when test="item.id == 0">
+                    insert into ticket (pickup_date, company_id, quantity, start_number, end_number, delivery_date)
+                    values
+                    (#{item.pickupDate}, #{item.companyId}, #{item.quantity}, #{item.startNumber}, #{item.endNumber},
+                    #{item.deliveryDate})
+                </when>
+                <otherwise>
+                    update ticket set
+                    company_id = #{item.companyId},
+                    delivery_date = #{item.deliveryDate}
+                    where id = #{item.id}
+                </otherwise>
+            </choose>
+        </foreach>
+    </insert>
+
+</mapper>

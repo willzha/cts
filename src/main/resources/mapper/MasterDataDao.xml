@@ -1,0 +1,41 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cts.dao.MasterDataDao">
+
+    <resultMap id="CompanyDtoMap" type="CompanyDto">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+    <select id="getCompanies" parameterType="int" resultMap="CompanyDtoMap">
+        select * from company
+        <where>
+            <choose>
+                <when test="type==1">
+                    type = 1
+                </when>
+                <when test="type==2">
+                    type = 2
+                </when>
+            </choose>
+        </where>
+    </select>
+
+    <insert id="saveCompanies" parameterType="list">
+        insert into company(name, type) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.name}, #{item.type})
+        </foreach>
+    </insert>
+
+    <delete id="removeCompanies" parameterType="list">
+        delete from company
+        where id in
+        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+</mapper>

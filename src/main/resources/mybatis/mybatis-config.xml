@@ -1,0 +1,17 @@
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 命名空间 -->
+    <typeAliases>
+        <typeAlias type="com.cts.dto.CompanyDto" alias="CompanyDto"/>
+        <typeAlias type="com.cts.dto.TicketDto" alias="TicketDto"/>
+        <typeAlias type="com.cts.dto.BillDto" alias="BillDto"/>
+        <typeAlias type="com.cts.dto.TicketNumberDto" alias="TicketNumberDto"/>
+    </typeAliases>
+
+    <typeHandlers>
+        <typeHandler handler="com.cts.handler.LocalDateTimeHandler" javaType="org.joda.time.LocalDateTime"
+                     jdbcType="DATE"/>
+    </typeHandlers>
+</configuration>
