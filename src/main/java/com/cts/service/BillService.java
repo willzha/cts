@@ -8,7 +8,7 @@ import com.cts.dto.TicketNumberDto;
 
 public interface BillService {
 
-	List<BillDto> getBills();
+	List<BillDto> getBills(int ticketId);
 
 	void saveBills(List<BillDto> bills);
 

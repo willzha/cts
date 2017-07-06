@@ -1,28 +1,28 @@
 package com.cts.ws;
 
-import java.util.List;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import com.cts.dto.BillDto;
-import com.cts.request.BillRequest;
+import com.cts.dto.DomesticSaleDto;
 import org.springframework.stereotype.Controller;
 
+import com.cts.request.BillRequest;
 import com.cts.response.CtsResponse;
+
+import java.util.List;
 
 @Controller
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Path("/bill")
-public interface BillWebService {
+@Path("/domestic")
+public interface DomesticWebService {
 
 	@GET
 	@Path("/")
-	CtsResponse getBills(@QueryParam("ticketId") int ticketId);
+	CtsResponse getDomestics();
 
 	@POST
 	@Path("/")
-	CtsResponse saveBills(BillRequest request);
+	CtsResponse saveDomestics(List<DomesticSaleDto> domestics);
 
 }

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TicketDto implements Serializable {
 
-	private int id;
+	private long id;
 	@JsonDeserialize(using = LocalDateTimeJacksonDeSerializable.class)
 	@JsonSerialize(using = LocalDateTimeJacksonSerializable.class)
 	private LocalDateTime pickupDate;
@@ -27,12 +27,16 @@ public class TicketDto implements Serializable {
 	@JsonSerialize(using = LocalDateTimeJacksonSerializable.class)
 	private LocalDateTime deliveryDate;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
+	}
+
+	public void setNumberInterval(String numberInterval) {
+		this.numberInterval = numberInterval;
 	}
 
 	public LocalDateTime getPickupDate() {

@@ -3,6 +3,8 @@ package com.cts.ws.impl;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.cts.aspect.CheckAuthority;
+import com.cts.request.BillRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +21,21 @@ public class BillWebServiceImpl implements BillWebService {
 	private BillService billService;
 
 	@Override
-	public CtsResponse getBills() {
+	@CheckAuthority
+	public CtsResponse getBills(int ticketId) {
 		CtsResponse response = new CtsResponse();
 		response.setCode(ResponseEnum.SUCCESS);
-		response.setData(billService.getBills());
+		response.setData(billService.getBills(ticketId));
 		return response;
 	}
 
 	@Override
-	public CtsResponse saveBills(List<BillDto> bills) {
+	@CheckAuthority
+	public CtsResponse saveBills(BillRequest request) {
+		long ticketId = request.getTicketId();
+		List<BillDto> bills = request.getBills();
 		for (BillDto bill : bills) {
+			bill.setTicketId(ticketId);
 			BigDecimal unitPrice = bill.getUnitPrice();
 			if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
 				bill.setTotalPrice(BigDecimal.ZERO);

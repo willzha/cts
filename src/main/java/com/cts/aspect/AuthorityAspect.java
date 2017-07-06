@@ -1,16 +1,22 @@
 package com.cts.aspect;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.cts.dto.UserDto;
+import com.cts.enums.ResponseEnum;
+import com.cts.response.CtsResponse;
 
 @Component
 @Aspect
@@ -27,20 +33,20 @@ public class AuthorityAspect {
 
 	@Around("check()")
 	public Object doAround(ProceedingJoinPoint jp) throws Throwable {
-//		DmsResponse response = new DmsResponse();
-//		HttpServletRequest request = ResteasyProviderFactory.getContextData(HttpServletRequest.class);
-//		Cookie[] cookies = request.getCookies();
-//		Cookie cookie = getToken(cookies);
-//		if (cookie == null) {
-//			response.setCode(ResponseEnum.NONE_PRIVILEGE);
-//			return response;
-//		}
-//		UserDto userDto = authorityService.get(cookie.getValue());
-//		if (userDto == null) {
-//			LOGGER.info("user not found");
-//			response.setCode(ResponseEnum.NONE_PRIVILEGE);
-//			return response;
-//		}
+		CtsResponse response = new CtsResponse();
+		HttpServletRequest request = ResteasyProviderFactory.getContextData(HttpServletRequest.class);
+		Cookie[] cookies = request.getCookies();
+		Cookie cookie = getToken(cookies);
+		if (cookie == null) {
+			response.setCode(ResponseEnum.NONE_PRIVILEGE);
+			return response;
+		}
+		UserDto userDto = authorityService.get(cookie.getValue());
+		if (userDto == null) {
+			LOGGER.info("user not found");
+			response.setCode(ResponseEnum.NONE_PRIVILEGE);
+			return response;
+		}
 		return jp.proceed();
 	}
 

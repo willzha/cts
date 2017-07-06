@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.cts.aspect.CheckAuthority;
 import com.google.common.collect.Sets;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.cxf.common.util.StringUtils;
@@ -26,6 +27,7 @@ public class MasterDataWebServiceImpl implements MasterDataWebService {
 	private MasterDataService masterDataService;
 
 	@Override
+	@CheckAuthority
 	public CtsResponse getCompanyType() {
 		List<EnumDto> companies = Lists.newArrayList(CompanyType.values()).stream().map(e -> new EnumDto(e.getDbConstant(), e.getText()))
 				.collect(Collectors.toList());
@@ -36,6 +38,7 @@ public class MasterDataWebServiceImpl implements MasterDataWebService {
 	}
 
 	@Override
+	@CheckAuthority
 	public CtsResponse getCompanies(int type) {
 		CtsResponse response = new CtsResponse();
 		response.setCode(ResponseEnum.SUCCESS);
@@ -44,6 +47,7 @@ public class MasterDataWebServiceImpl implements MasterDataWebService {
 	}
 
 	@Override
+	@CheckAuthority
 	public CtsResponse saveCompanies(List<CompanyDto> companyDtos) {
 		masterDataService.saveCompanies(companyDtos);
 		CtsResponse response = new CtsResponse();
@@ -52,6 +56,7 @@ public class MasterDataWebServiceImpl implements MasterDataWebService {
 	}
 
 	@Override
+	@CheckAuthority
 	public CtsResponse removeCompany(String ids) {
 		List<Long> companyIds = Lists.newArrayList();
 		String[] strIds = StringUtils.split(ids, ",");

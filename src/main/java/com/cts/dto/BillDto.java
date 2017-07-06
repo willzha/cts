@@ -14,16 +14,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BillDto implements Serializable {
 
-	private int billId;
-	private int ticketId;
-	@JsonDeserialize(using = LocalDateTimeJacksonDeSerializable.class)
-	@JsonSerialize(using = LocalDateTimeJacksonSerializable.class)
-	private LocalDateTime pickupDate;
-	private String provideTicketCompanyName;
-	private int quantity;
-	private int startNumber;
-	private int endNumber;
-	private String numberInterval; // format: startNumber - endNumber
+	private long billId;
+	private long ticketId;
 	@JsonDeserialize(using = LocalDateTimeJacksonDeSerializable.class)
 	@JsonSerialize(using = LocalDateTimeJacksonSerializable.class)
 	private LocalDateTime deliveryDate;
@@ -42,64 +34,20 @@ public class BillDto implements Serializable {
 	private String paymentMethod;
 	private BigDecimal balance;
 
-	public int getBillId() {
+	public long getBillId() {
 		return billId;
 	}
 
-	public void setBillId(int billId) {
+	public void setBillId(long billId) {
 		this.billId = billId;
 	}
 
-	public int getTicketId() {
+	public long getTicketId() {
 		return ticketId;
 	}
 
-	public void setTicketId(int ticketId) {
+	public void setTicketId(long ticketId) {
 		this.ticketId = ticketId;
-	}
-
-	public LocalDateTime getPickupDate() {
-		return pickupDate;
-	}
-
-	public void setPickupDate(LocalDateTime pickupDate) {
-		this.pickupDate = pickupDate;
-	}
-
-	public String getProvideTicketCompanyName() {
-		return provideTicketCompanyName;
-	}
-
-	public void setProvideTicketCompanyName(String provideTicketCompanyName) {
-		this.provideTicketCompanyName = provideTicketCompanyName;
-	}
-
-	public int getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
-
-	public int getStartNumber() {
-		return startNumber;
-	}
-
-	public void setStartNumber(int startNumber) {
-		this.startNumber = startNumber;
-	}
-
-	public int getEndNumber() {
-		return endNumber;
-	}
-
-	public void setEndNumber(int endNumber) {
-		this.endNumber = endNumber;
-	}
-
-	public String getNumberInterval() {
-		return new StringBuilder().append(startNumber).append(" - ").append(endNumber).toString();
 	}
 
 	public LocalDateTime getDeliveryDate() {
@@ -108,10 +56,6 @@ public class BillDto implements Serializable {
 
 	public void setDeliveryDate(LocalDateTime deliveryDate) {
 		this.deliveryDate = deliveryDate;
-	}
-
-	public void setNumberInterval(String numberInterval) {
-		this.numberInterval = numberInterval;
 	}
 
 	public int getUseTicketCompanyId() {

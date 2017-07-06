@@ -2,6 +2,7 @@ package com.cts.ws.impl;
 
 import java.util.List;
 
+import com.cts.aspect.CheckAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class TicketWebServiceImpl implements TicketWebService {
 	private TicketService ticketService;
 
 	@Override
+	@CheckAuthority
 	public CtsResponse getTickets() {
 		CtsResponse response = new CtsResponse();
 		response.setCode(ResponseEnum.SUCCESS);
@@ -28,6 +30,7 @@ public class TicketWebServiceImpl implements TicketWebService {
 	}
 
 	@Override
+	@CheckAuthority
 	public CtsResponse saveTickets(List<TicketDto> tickets) {
 		List<TicketDto> result = Lists.newArrayList();
 		for (TicketDto ticket : tickets) {

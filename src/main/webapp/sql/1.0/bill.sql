@@ -1,6 +1,7 @@
 create table bill (
-  id bigint primary key identity(1,1),
-  ticket_id bigint,
+  id int primary key identity(1,1),
+  delivery_date datetime,
+  ticket_id bigint not null,
   company_id int,
   books varchar(255),
   used_quantity int,

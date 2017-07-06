@@ -1,0 +1,41 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cts.dao.DomesticSaleDao">
+
+    <resultMap id="DomesticSaleDtoMap" type="DomesticSaleDto">
+        <id property="id" column="id"/>
+        <result property="date" column="date" typeHandler="com.cts.handler.LocalDateTimeHandler"/>
+        <result property="colliery" column="colliery"/>
+        <result property="company" column="company"/>
+        <result property="books" column="books"/>
+        <result property="quantity" column="quantity"/>
+        <result property="ton" column="ton"/>
+    </resultMap>
+
+    <select id="getDomestics" resultMap="DomesticSaleDtoMap">
+        select * from domestic_sale
+    </select>
+
+    <insert id="saveDomestics" parameterType="list">
+        <foreach collection="list" item="item" index="index" separator=";">
+            <choose>
+                <when test="item.id == 0">
+                    insert into domestic_sale ("date", colliery, company, books, quantity, ton)
+                    values (#{item.date}, #{item.colliery}, #{item.company}, #{item.books}, #{item.quantity}, #{item.ton})
+                </when>
+                <otherwise>
+                    update domestic_sale set
+                    date = #{item.date},
+                    colliery = #{item.colliery},
+                    company = #{item.company},
+                    books = #{item.books},
+                    quantity = #{item.quantity},
+                    ton = #{item.ton}
+                    where id = #{item.id}
+                </otherwise>
+            </choose>
+        </foreach>
+    </insert>
+
+</mapper>

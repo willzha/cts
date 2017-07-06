@@ -24,9 +24,19 @@
     </select>
 
     <insert id="saveCompanies" parameterType="list">
-        insert into company(name, type) values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.name}, #{item.type})
+            <choose>
+                <when test="item.id == 0">
+                    insert into company(name, type) values
+                    (#{item.name}, #{item.type})
+                </when>
+                <otherwise>
+                    update company
+                    set name = #{item.name},
+                    type = #{item.type}
+                    where id = #{item.id}
+                </otherwise>
+            </choose>
         </foreach>
     </insert>
 

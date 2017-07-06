@@ -7,7 +7,9 @@
         <typeAlias type="com.cts.dto.CompanyDto" alias="CompanyDto"/>
         <typeAlias type="com.cts.dto.TicketDto" alias="TicketDto"/>
         <typeAlias type="com.cts.dto.BillDto" alias="BillDto"/>
+        <typeAlias type="com.cts.dto.DomesticSaleDto" alias="DomesticSaleDto"/>
         <typeAlias type="com.cts.dto.TicketNumberDto" alias="TicketNumberDto"/>
+        <typeAlias type="com.cts.dto.UserDto" alias="UserDto"/>
     </typeAliases>
 
     <typeHandlers>

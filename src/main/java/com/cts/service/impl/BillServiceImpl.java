@@ -20,8 +20,8 @@ public class BillServiceImpl implements BillService {
 	private BillDao billDao;
 
 	@Override
-	public List<BillDto> getBills() {
-		return billDao.getBills();
+	public List<BillDto> getBills(int ticketId) {
+		return billDao.getBills(ticketId);
 	}
 
 	@Override

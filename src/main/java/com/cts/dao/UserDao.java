@@ -1,7 +1,8 @@
 package com.cts.dao;
 
-import com.cts.dto.UserDto;
 import org.apache.ibatis.annotations.Param;
+
+import com.cts.dto.UserDto;
 
 public interface UserDao {
 
