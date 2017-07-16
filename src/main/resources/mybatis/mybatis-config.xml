@@ -10,6 +10,7 @@
         <typeAlias type="com.cts.dto.DomesticSaleDto" alias="DomesticSaleDto"/>
         <typeAlias type="com.cts.dto.TicketNumberDto" alias="TicketNumberDto"/>
         <typeAlias type="com.cts.dto.UserDto" alias="UserDto"/>
+        <typeAlias type="com.cts.request.TicketRequest" alias="TicketRequest"/>
     </typeAliases>
 
     <typeHandlers>

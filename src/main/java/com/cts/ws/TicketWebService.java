@@ -18,7 +18,8 @@ public interface TicketWebService {
 
 	@GET
 	@Path("/")
-	CtsResponse getTickets();
+	CtsResponse getTickets(@QueryParam("pageIndex") int pageIndex, @QueryParam("pageSize") int pageSize, @QueryParam("sortField") String sortField,
+			@QueryParam("sortOrder") String sortOrder, @QueryParam("companyId") String companyId, @QueryParam("selectionNumber") String selectionNumber);
 
 	@POST
 	@Path("/")

@@ -11,6 +11,7 @@
         <result property="quantity" column="quantity"/>
         <result property="startNumber" column="start_number"/>
         <result property="endNumber" column="end_number"/>
+        <result property="selectionNumber" column="selection_number"/>
         <result property="deliveryDate" column="delivery_date" typeHandler="com.cts.handler.LocalDateTimeHandler"/>
     </resultMap>
 
@@ -42,24 +43,61 @@
             end
     </select>
 
-    <select id="getTickets" resultMap="TicketDtoMap">
+    <select id="getTicketsCount" parameterType="TicketRequest" resultType="int">
+        select count(id) from ticket
+        <where>
+            <if test="companyId != null and companyId != ''">
+                company_id = #{companyId}
+            </if>
+            <if test="selectionNumber != null and selectionNumber != ''">
+                and selection_number like '%' + #{selectionNumber} + '%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getTickets" parameterType="TicketRequest" resultMap="TicketDtoMap">
+        select
+        a.id, a.pickup_date, a.company_id, a.company_name,
+        a.quantity, a.start_number, a.end_number, a.selection_number, a.delivery_date, a.rn
+        from (
         select t.id, t.pickup_date, c.id as company_id, c.name as company_name,
-        t.quantity, t.start_number, t.end_number, t.delivery_date
+        t.quantity, t.start_number, t.end_number, t.selection_number, t.delivery_date,
+        row_number() over (order by t.id) as rn
         from ticket t left join company c on t.company_id = c.id
+        <where>
+            <if test="companyId != null and companyId != ''">
+                t.company_id = #{companyId}
+            </if>
+            <if test="selectionNumber != null and selectionNumber != ''">
+                and t.selection_number like '%' + #{selectionNumber} + '%'
+            </if>
+        </where>
+        ) a
+        <where>
+            <if test="end > 0">
+                a.rn BETWEEN #{start} and #{end}
+            </if>
+        </where>
     </select>
 
     <insert id="saveTickets" parameterType="list">
         <foreach collection="list" item="item" index="index" separator=";">
             <choose>
                 <when test="item.id == 0">
-                    insert into ticket (pickup_date, company_id, quantity, start_number, end_number, delivery_date)
+                    insert into ticket (pickup_date, company_id, quantity, start_number, end_number, selection_number,
+                    delivery_date)
                     values
                     (#{item.pickupDate}, #{item.companyId}, #{item.quantity}, #{item.startNumber}, #{item.endNumber},
-                    #{item.deliveryDate})
+                    #{item.selectionNumber}, #{item.deliveryDate})
                 </when>
                 <otherwise>
                     update ticket set
+                    pickup_date = #{item.pickupDate},
                     company_id = #{item.companyId},
+                    quantity = #{item.quantity},
+                    start_number = #{item.startNumber},
+                    end_number = #{item.endNumber},
+                    selection_number = #{item.selectionNumber},
                     delivery_date = #{item.deliveryDate}
                     where id = #{item.id}
                 </otherwise>

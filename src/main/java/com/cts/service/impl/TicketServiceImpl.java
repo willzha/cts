@@ -2,6 +2,7 @@ package com.cts.service.impl;
 
 import java.util.List;
 
+import com.cts.request.TicketRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,13 @@ public class TicketServiceImpl implements TicketService {
 	private TicketDao ticketDao;
 
 	@Override
-	public List<TicketDto> getTickets() {
-		return ticketDao.getTickets();
+	public int getTicketsCount(TicketRequest request) {
+		return ticketDao.getTicketsCount(request);
+	}
+
+	@Override
+	public List<TicketDto> getTickets(TicketRequest request) {
+		return ticketDao.getTickets(request);
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class TicketDto implements Serializable {
 	private int quantity;
 	private int startNumber;
 	private int endNumber;
-	private String numberInterval; // format: startNumber - endNumber
+	private String selectionNumber;
 	@JsonDeserialize(using = LocalDateTimeJacksonDeSerializable.class)
 	@JsonSerialize(using = LocalDateTimeJacksonSerializable.class)
 	private LocalDateTime deliveryDate;
@@ -33,10 +33,6 @@ public class TicketDto implements Serializable {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public void setNumberInterval(String numberInterval) {
-		this.numberInterval = numberInterval;
 	}
 
 	public LocalDateTime getPickupDate() {
@@ -87,15 +83,19 @@ public class TicketDto implements Serializable {
 		this.endNumber = endNumber;
 	}
 
-	public String getNumberInterval() {
-		return new StringBuilder().append(startNumber).append(" - ").append(endNumber).toString();
-	}
-
 	public LocalDateTime getDeliveryDate() {
 		return deliveryDate;
 	}
 
 	public void setDeliveryDate(LocalDateTime deliveryDate) {
 		this.deliveryDate = deliveryDate;
+	}
+
+	public String getSelectionNumber() {
+		return selectionNumber;
+	}
+
+	public void setSelectionNumber(String selectionNumber) {
+		this.selectionNumber = selectionNumber;
 	}
 }
